@@ -11,5 +11,5 @@ services:
       - key: DJANGO_SETTINGS_MODULE
         value: resto_project.settings
       - key: PYTHON_VERSION
-        value: 3.12
+        value: 3.12.2
       # Set SECRET_KEY in Render dashboard (safer), but you can also hardcode here if you want.
