@@ -1,0 +1,46 @@
+{% extends "billingapp/base.html" %}
+{% block content %}
+<h5>Cart</h5>
+
+{% if items %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>Item</th><th>Qty</th><th>Total</th><th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in items %}
+      <tr>
+        <td>{{ row.item.name }}</td>
+        <form method="post" action="{% url 'update_cart' %}" class="d-flex align-items-center gap-2">
+         {% csrf_token %}
+         <input type="hidden" name="item_id" value="{{ row.item.id }}">
+         <input type="number" name="qty" value="{{ row.qty }}" min="0" class="form-control form-control-sm" style="width:60px;">
+         <button class="btn btn-sm btn-outline-primary">Update</button>
+       </form>
+        <td>₹ {{ row.line_total }}</td>
+        <td>
+       <form method="post" action="{% url 'remove_from_cart' %}">
+         {% csrf_token %}
+         <input type="hidden" name="item_id" value="{{ row.item.id }}">
+         <button class="btn btn-sm btn-danger">X</button>
+       </form>
+     </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h6>Total: ₹ {{ total }}</h6>
+
+<a href="/" class="btn btn-outline-secondary">Back to Menu</a>
+ <form method="post" action="{% url 'place_order' %}">
+   {% csrf_token %}
+   <button class="btn btn-accent w-100 mt-3">Proceed to Payment</button>
+ </form>
+{% else %}
+<p class="text-muted">Your cart is empty.</p>
+{% endif %}
+
+{% endblock %}

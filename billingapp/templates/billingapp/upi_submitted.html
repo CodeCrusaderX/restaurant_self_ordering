@@ -1,0 +1,10 @@
+{% extends "billingapp/base.html" %}
+{% load static %}
+{% block content %}
+<div class="text-center py-5">
+  <h4>Reference Submitted</h4>
+  <p>Thanks — we received your transaction reference: <b>{{ order.payment_reference }}</b></p>
+  <p class="text-muted">Staff will verify and confirm the payment shortly.</p>
+  <a href="{% url 'track_order' order.id %}" class="btn btn-accent mt-3 w-100">Track Order</a>
+</div>
+{% endblock %}

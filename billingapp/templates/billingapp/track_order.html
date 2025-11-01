@@ -1,0 +1,61 @@
+{% extends "billingapp/base.html" %}
+{% load static %}
+{% block content %}
+
+<h4>Order #{{ order.id }}</h4>
+<p>Table: {{ order.table.name }}</p>
+
+<div class="alert alert-info">
+  Current Status: <b>{{ order.status }}</b>
+</div>
+
+{# ---------------- Pending Payment Flow ---------------- #}
+{% if order.status == "pending_payment" %}
+  <a href="{% url 'upi_pay' order.id %}" class="btn btn-accent w-100 mb-2">
+    Pay via UPI QR
+  </a>
+
+  <form method="post" action="{% url 'cancel_order' order.id %}">
+    {% csrf_token %}
+    <button class="btn btn-danger w-100">Cancel Order</button>
+  </form>
+
+{# ---------------- Paid but waiting for kitchen ---------------- #}
+{% elif order.status == "paid" %}
+  <div class="alert alert-warning mt-3">
+    ✅ Payment received — Waiting for kitchen acceptance
+  </div>
+
+{# ---------------- Accepted by kitchen ---------------- #}
+{% elif order.status == "accepted" %}
+  <div class="alert alert-primary mt-3">
+    👨‍🍳 Order accepted — Preparing soon
+  </div>
+
+{# ---------------- Preparing ---------------- #}
+{% elif order.status == "preparing" %}
+  <div class="alert alert-info mt-3">
+    🍳 Your food is being prepared
+  </div>
+
+{# ---------------- Served ---------------- #}
+{% elif order.status == "served" %}
+  <div class="alert alert-success mt-3">
+    ✅ Order Served — Enjoy your meal!
+  </div>
+  <a class="btn btn-accent w-100 mt-2" href="/">Order More</a>
+
+{# ---------------- Cancelled ---------------- #}
+{% elif order.status == "cancelled" %}
+  <div class="alert alert-danger mt-3">
+    ❌ Order Cancelled
+  </div>
+  <a class="btn btn-accent w-100 mt-2" href="/">Back to Menu</a>
+{% endif %}
+
+<script>
+  // auto-refresh status every 5 seconds
+  setTimeout(() => location.reload(), 5000);
+</script>
+
+{% endblock %}

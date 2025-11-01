@@ -1,0 +1,65 @@
+{% extends "billingapp/base.html" %}
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Billing — {{ day }}</h4>
+    <form class="d-flex" method="get">
+      <input type="date" name="date" class="form-control form-control-sm me-2" value="{{ day|date:'Y-m-d' }}">
+      <button class="btn btn-sm btn-primary">Go</button>
+    </form>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <div class="card shadow-sm"><div class="card-body">
+        <div class="small text-muted">Orders</div>
+        <div class="fs-4">{{ orders_count }}</div>
+      </div></div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm"><div class="card-body">
+        <div class="small text-muted">Total Amount</div>
+        <div class="fs-4">₹ {{ total_amount }}</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+      <h6 class="mb-2">Top Items</h6>
+      <table class="table table-sm">
+        <thead><tr><th>Item</th><th class="text-end">Qty</th></tr></thead>
+        <tbody>
+        {% for r in top_items %}
+          <tr><td>{{ r.name }}</td><td class="text-end">{{ r.qty }}</td></tr>
+        {% empty %}
+          <tr><td colspan="2" class="text-muted">No data</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h6 class="mb-2">Orders</h6>
+      <table class="table table-sm">
+        <thead><tr><th>#</th><th>Table</th><th>Status</th><th class="text-end">Amount</th><th></th></tr></thead>
+        <tbody>
+        {% for o in orders %}
+          <tr>
+            <td>{{ o.id }}</td>
+            <td>{{ o.table.name }}</td>
+            <td>{{ o.status }}</td>
+            <td class="text-end">₹ {{ o.display_amount }}</td>
+            <td><a class="btn btn-sm btn-outline-primary" href="{% url 'order_bill' o.id %}">View Bill</a></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-muted">No orders</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

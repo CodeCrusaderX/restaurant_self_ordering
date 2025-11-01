@@ -1,0 +1,88 @@
+{% extends "billingapp/base.html" %}
+{% block content %}
+<h4>Kitchen Orders</h4>
+
+{% if orders %}
+  {% for order in orders %}
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+
+        <div class="d-flex justify-content-between">
+          <strong>Order #{{ order.id }}</strong>
+          <span class="badge bg-secondary text-uppercase">{{ order.status }}</span>
+        </div>
+
+        <div class="small text-muted mb-2">
+          Table: {{ order.table.name }}
+        </div>
+
+        <ul class="list-group mb-2">
+          {% for row in order.items.all %}
+          <li class="list-group-item d-flex justify-content-between">
+            <span>{{ row.item.name }}</span>
+            <span class="fw-bold">x {{ row.qty }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+
+        <!-- Total amount -->
+        <div class="mt-2 fw-bold">
+          Total: ₹{{ order.amount }}
+        </div>
+
+        <!-- PAYMENT LOGIC -->
+        {% if order.status == "pending_payment" %}
+          {% if order.payment_reference %}
+            <div class="alert alert-info py-1 mb-2">
+              <strong>UTR:</strong> {{ order.payment_reference }}
+            </div>
+
+            <form action="{% url 'verify_payment' order.id %}" method="post" class="d-grid mb-2">
+              {% csrf_token %}
+              <button class="btn btn-success btn-sm">✅ Verify Payment</button>
+            </form>
+
+          {% else %}
+            <div class="alert alert-warning py-1 mb-2">
+              Waiting for customer UPI reference ⏳
+            </div>
+          {% endif %}
+        {% endif %}
+
+        <!-- ORDER FLOW BUTTONS -->
+        <div class="d-flex gap-2">
+
+          {% if order.status == "paid" %}
+            <a href="{% url 'update_order_status' order.id 'accepted' %}" class="btn btn-primary btn-sm">
+              👨‍🍳 Accept Order
+            </a>
+          {% endif %}
+
+          {% if order.status == "accepted" %}
+            <a href="{% url 'update_order_status' order.id 'preparing' %}" class="btn btn-warning btn-sm">
+              🔥 Start Preparing
+            </a>
+          {% endif %}
+
+          {% if order.status == "preparing" %}
+            <a href="{% url 'update_order_status' order.id 'served' %}" class="btn btn-success btn-sm">
+              ✅ Mark Served
+            </a>
+          {% endif %}
+
+        </div>
+
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-muted">No active orders</p>
+{% endif %}
+
+<!-- Auto-refresh every 10 seconds -->
+<script>
+  setTimeout(() => {
+    window.location.reload();
+  }, 2000);
+</script>
+{% endblock %}

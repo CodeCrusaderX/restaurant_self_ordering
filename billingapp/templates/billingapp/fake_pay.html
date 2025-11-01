@@ -1,0 +1,16 @@
+{% extends "billingapp/base.html" %}
+{% block content %}
+<div class="text-center py-5">
+  <h4>💳 Pay for Order #{{ order.id }}</h4>
+  <p class="text-muted mb-4">Amount will be calculated later when bill is added</p>
+
+  <form method="post" action="{% url 'mark_paid' order.id %}">
+    {% csrf_token %}
+    <button class="btn btn-accent btn-lg w-100">Pay ₹ (fake)</button>
+  </form>
+
+  <a href="{% url 'track_order' order.id %}" class="btn btn-outline-secondary w-100 mt-3">
+    Go Back
+  </a>
+</div>
+{% endblock %}

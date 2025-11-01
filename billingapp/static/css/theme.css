@@ -1,0 +1,7 @@
+:root{
+  --navy:#0b3d91;
+  --accent:#f5a623;
+}
+.bg-navy{ background-color: var(--navy) !important; }
+.btn-accent{ background-color: var(--accent); border-color: var(--accent); color:#000; }
+.badge-accent{ background-color: var(--accent); color:#000; }

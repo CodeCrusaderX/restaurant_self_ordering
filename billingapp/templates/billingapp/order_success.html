@@ -1,0 +1,9 @@
+{% extends "billingapp/base.html" %}
+{% block content %}
+<div class="text-center py-5">
+  <h4>✅ Order Placed!</h4>
+  <p>Your food is being prepared.</p>
+  <p><b>Order #{{ order.id }}</b></p>
+  <a href="/" class="btn btn-accent mt-3">Back to Menu</a>
+</div>
+{% endblock %}

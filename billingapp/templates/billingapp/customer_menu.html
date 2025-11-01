@@ -1,0 +1,40 @@
+{% extends "billingapp/base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Menu</h5>
+    {% if table_name %}
+      <span class="badge badge-accent">Table: {{ table_name }}</span>
+    {% else %}
+      <span class="text-danger small">No table selected</span>
+    {% endif %}
+  </div>
+
+  {% for cat in categories %}
+    <h6 class="mt-3">{{ cat.name }}</h6>
+    <div class="list-group">
+      {% for it in cat.items.all %}
+        {% if it.is_available %}
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>{{ it.name }}</div>
+            <div class="d-flex align-items-center gap-3">
+              <div class="fw-semibold">₹ {{ it.price }}</div>
+              <form method="post" action="{% url 'add_to_cart' %}">
+                {% csrf_token %}
+                <input type="hidden" name="item_id" value="{{ it.id }}">
+                <button class="btn btn-sm btn-outline-primary">Add</button>
+              </form>
+
+            </div>
+          </div>
+        {% else %}
+          <div class="list-group-item d-flex justify-content-between align-items-center text-muted">
+            <div>{{ it.name }} (Unavailable)</div>
+            <div class="fw-semibold">₹ {{ it.price }}</div>
+          </div>
+        {% endif %}
+      {% empty %}
+        <div class="text-muted small">No items</div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+{% endblock %}
