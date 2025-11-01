@@ -16,8 +16,10 @@ urlpatterns = [
     path('order/<int:order_id>/bill/', views.order_bill, name='order_bill'),
     path('order/<int:order_id>/track/', views.track_order, name='track_order'),
     path('order/<int:order_id>/cancel/', views.cancel_order, name='cancel_order'),
-    path('pay/<int:order_id>/', views.fake_pay, name='fake_pay'),
-    path('pay/<int:order_id>/mark-paid/', views.mark_paid, name='mark_paid'),
+    #path('pay/<int:order_id>/', views.fake_pay, name='fake_pay'),
+    #path('pay/<int:order_id>/mark-paid/', views.mark_paid, name='mark_paid'),
+    path("pay/<int:order_id>/", views.upi_pay, name="upi_pay"),
+    path("pay/<int:order_id>/submit/", views.submit_upi_txn, name="submit_upi_txn"),
     path("kitchen/order/<int:order_id>/verify/", views.verify_payment, name="verify_payment"),
     path('billing/', views.billing_dashboard, name='billing_dashboard'),
 
