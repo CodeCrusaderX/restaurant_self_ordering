@@ -2,8 +2,14 @@ services:
   - type: web
     name: restaurant-ordering
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn resto_project.wsgi
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: |
+      python manage.py migrate --noinput && gunicorn resto_project.wsgi
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: resto_project.settings
+      - key: PYTHON_VERSION
+        value: 3.12
+      # Set SECRET_KEY in Render dashboard (safer), but you can also hardcode here if you want.
