@@ -26,5 +26,6 @@ def test_session(request):
 urlpatterns = [
     path("session-test/", test_session),
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),  # login/logout/password views
     path('', include('billingapp.urls'))
 ]

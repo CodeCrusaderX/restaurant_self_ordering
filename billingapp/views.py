@@ -12,6 +12,9 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from datetime import datetime
 from django.db.models import Sum, Count, F
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db import models
+
 
 def home(request):
     # Clear any previous table selection
@@ -66,7 +69,13 @@ def customer_menu(request):
         messages.error(request, "Please select a table first")
         return redirect("choose_table")
 
-    categories = MenuCategory.objects.prefetch_related("items").all()
+    #categories = MenuCategory.objects.prefetch_related("items").all()
+    # prefetch only available items to display
+    categories = (MenuCategory.objects.all()
+                  .prefetch_related(models.Prefetch(
+                      "items",
+                      queryset=MenuItem.objects.filter(is_available=True)
+                  )))
     return render(request, "billingapp/customer_menu.html", {
         "table_name": table_name,
         "categories": categories,
@@ -171,10 +180,21 @@ def view_cart(request):
 def get_cart(request):
     return request.session.get("cart", {})
 
-def kitchen_dashboard(request):
-    orders = Order.objects.exclude(status__in=["served", "cancelled"]).order_by("created_at")
-    return render(request, "billingapp/kitchen_dashboard.html", {"orders": orders})
+def is_staff_or_super(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
 
+@user_passes_test(is_staff_or_super)
+def kitchen_dashboard(request):
+    #orders = Order.objects.exclude(status__in=["served", "cancelled"]).order_by("created_at")
+    #return render(request, "billingapp/kitchen_dashboard.html", {"orders": orders})
+    orders = Order.objects.exclude(status__in=["served", "cancelled"]).order_by("created_at")
+    categories = MenuCategory.objects.prefetch_related("items").all()
+    return render(request, "billingapp/kitchen_dashboard.html", {
+        "orders": orders,
+        "categories": categories
+    })
+
+@user_passes_test(is_staff_or_super)
 def update_order_status(request, order_id, new_status):
     order = get_object_or_404(Order, id=order_id)
     order.status = new_status
@@ -235,6 +255,7 @@ def submit_upi_txn(request, order_id):
     return render(request, "billingapp/upi_submitted.html", {"order": order})
 
 @require_POST
+@user_passes_test(is_staff_or_super)
 def verify_payment(request, order_id):
     order = get_object_or_404(Order, id=order_id)
 
@@ -249,6 +270,7 @@ def verify_payment(request, order_id):
     messages.success(request, f"Order #{order.id} marked as Paid ✅")
     return redirect("kitchen_dashboard")
 
+@user_passes_test(is_staff_or_super)
 def billing_dashboard(request):
     """
     Simple staff dashboard: totals by day (paidserved), filter by ?date=YYYY-MM-DD
@@ -283,3 +305,10 @@ def billing_dashboard(request):
         },
     )
 
+@user_passes_test(is_staff_or_super)
+@require_POST
+def toggle_item_availability(request, item_id):
+    item = get_object_or_404(MenuItem, id=item_id)
+    item.is_available = not item.is_available
+    item.save()
+    return redirect("kitchen_dashboard")

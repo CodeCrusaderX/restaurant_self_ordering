@@ -16,6 +16,7 @@ urlpatterns = [
     path('order/<int:order_id>/submit-upi/', views.submit_upi_txn, name='submit_upi_txn'),
     path('kitchen/', views.kitchen_dashboard, name='kitchen_dashboard'),
     path('kitchen/order/<int:order_id>/status/<str:new_status>/', views.update_order_status, name='update_order_status'),
+    path('kitchen/item/<int:item_id>/toggle/', views.toggle_item_availability, name='toggle_item_availability'),
     path('order/<int:order_id>/bill/', views.order_bill, name='order_bill'),
     path('order/<int:order_id>/track/', views.track_order, name='track_order'),
     path('order/<int:order_id>/cancel/', views.cancel_order, name='cancel_order'),
