@@ -13,6 +13,25 @@ from django.utils import timezone
 from datetime import datetime
 from django.db.models import Sum, Count, F
 
+def choose_table(request):
+    tables = Table.objects.all()
+    return render(request, "billingapp/choose_table.html", {"tables": tables})
+
+
+def choose_table_submit(request):
+    table_id = request.POST.get("table_id")
+    if not table_id:
+        messages.error(request, "Please select a table")
+        return redirect("choose_table")
+
+    table = Table.objects.get(id=table_id)
+
+    request.session["table_id"] = table.id
+    request.session["table_name"] = table.name
+    request.session.modified = True
+
+    return redirect("customer_menu")
+
 def order_start(request):
     token = request.GET.get("t")
     if not token:
@@ -35,11 +54,16 @@ def order_start(request):
 
 def customer_menu(request):
     table_name = request.session.get("table_name")
+    if not table_name:
+        messages.error(request, "Please select a table first")
+        return redirect("choose_table")
+
     categories = MenuCategory.objects.prefetch_related("items").all()
     return render(request, "billingapp/customer_menu.html", {
         "table_name": table_name,
         "categories": categories,
     })
+
 
 @require_POST
 def add_to_cart(request):
