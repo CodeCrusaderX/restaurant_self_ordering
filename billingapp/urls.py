@@ -5,7 +5,8 @@ urlpatterns = [
     path("table/", views.choose_table, name="choose_table"),
     path("table/submit/", views.choose_table_submit, name="choose_table_submit"),
     path('order/start/', views.order_start, name='order_start'),   # QR entry point ?t=<token>
-    path('', views.customer_menu, name='customer_menu'),           # menu after table set
+    path('', views.home, name='home'),
+    path('menu/', views.customer_menu, name='customer_menu'),      # menu after table set
     path('add-to-cart/', views.add_to_cart, name='add_to_cart'),
     path('cart/', views.view_cart, name='view_cart'),
     path('cart/update/', views.update_cart, name='update_cart'),

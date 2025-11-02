@@ -13,6 +13,13 @@ from django.utils import timezone
 from datetime import datetime
 from django.db.models import Sum, Count, F
 
+def home(request):
+    # Clear any previous table selection
+    request.session.pop("table_id", None)
+    request.session.pop("table_name", None)
+    request.session.pop("cart", None)
+    return render(request, "billingapp/home.html")
+
 def choose_table(request):
     tables = Table.objects.all()
     return render(request, "billingapp/choose_table.html", {"tables": tables})
@@ -30,7 +37,8 @@ def choose_table_submit(request):
     request.session["table_name"] = table.name
     request.session.modified = True
 
-    return redirect("customer_menu")
+    return redirect("/menu/")
+
 
 def order_start(request):
     token = request.GET.get("t")
