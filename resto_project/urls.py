@@ -17,7 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from django.http import HttpResponse
+
+def test_session(request):
+    request.session["test"] = "ok"
+    return HttpResponse("Session works: " + request.session.get("test", "no"))
+
 urlpatterns = [
+    path("session-test/", test_session),
     path('admin/', admin.site.urls),
-    path('', include('billingapp.urls')),
+    path('', include('billingapp.urls'))
 ]

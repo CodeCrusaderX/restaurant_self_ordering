@@ -95,10 +95,10 @@ def place_order(request):
         return redirect("customer_menu")
 
     # --- Calculate total properly ---
-    total = 0
+    total = Decimal("0.00")
     for item_id, qty in cart.items():
         item = MenuItem.objects.get(id=item_id)
-        total = Decimal(item.price) * int(qty)
+        total += Decimal(item.price) * int(qty)
 
     # --- Create order with total ---
     order = Order.objects.create(
@@ -129,7 +129,7 @@ def view_cart(request):
             item = MenuItem.objects.get(id=item_id)
             line_total = item.price * qty
             items.append({"item": item, "qty": qty, "line_total": line_total})
-            total = line_total
+            total += line_total
         except MenuItem.DoesNotExist:
             pass
 

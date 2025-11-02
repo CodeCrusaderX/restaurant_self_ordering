@@ -64,7 +64,7 @@ class Order(models.Model):
         from decimal import Decimal
         total = Decimal("0.00")
         for li in self.items.select_related("item").all():
-            total = (li.item.price * li.qty)
+            total += (li.item.price * li.qty)
         return total
 
     @property

@@ -22,6 +22,7 @@ urlpatterns = [
     path("pay/<int:order_id>/submit/", views.submit_upi_txn, name="submit_upi_txn"),
     path("kitchen/order/<int:order_id>/verify/", views.verify_payment, name="verify_payment"),
     path('billing/', views.billing_dashboard, name='billing_dashboard'),
+    
 
 
 ]
